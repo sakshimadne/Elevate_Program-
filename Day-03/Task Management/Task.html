@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 400px;
+        margin: 20px auto;
+        text-align: center;
+      }
+      input,
+      button,
+      select {
+        padding: 8px;
+        margin: 5px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #e8e8e8;
+        padding: 8px;
+        margin: 5px 0;
+      }
+      .done {
+        text-decoration: line-through;
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Task Manager</h1>
+    <input id="taskInput" placeholder="Task title" />
+    <select id="taskPriority">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+    <button onclick="addTask()">Add</button>
+    <br />
+    <label for="filterPriority">Filter by Priority:</label>
+    <select id="filterPriority" onchange="showTasks()">
+      <option value="all">All</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+    <button onclick="sortTasks()">Sort A-Z</button>
+    <ul id="taskList"></ul>
+
+    <script>
+      let taskList = []
+
+      function addTask() {
+        let input = document.getElementById('taskInput')
+        let priority = document.getElementById('taskPriority').value
+        let taskText = input.value
+
+        if (!taskText) {
+          alert('Task cannot be empty!')
+          return
+        }
+
+        taskList.push({ text: taskText, done: false, priority: priority })
+        input.value = ''
+        showTasks()
+      }
+
+      function toggleTask(index) {
+        taskList[index].done = !taskList[index].done
+        showTasks()
+      }
+
+      function deleteTask(index) {
+        taskList.splice(index, 1)
+        showTasks()
+      }
+
+      function sortTasks() {
+        taskList.sort((a, b) => a.text.localeCompare(b.text))
+        showTasks()
+      }
+
+      function showTasks() {
+        let list = document.getElementById('taskList')
+        let filter = document.getElementById('filterPriority').value
+        list.innerHTML = ''
+
+        taskList.forEach((task, i) => {
+          if (filter !== 'all' && task.priority !== filter) return
+
+          let item = document.createElement('li')
+          item.innerHTML = `
+                    <span class="${
+                      task.done ? 'done' : ''
+                    }" onclick="toggleTask(${i})">
+                        ${task.text} (${task.priority})
+                    </span>
+                    <button onclick="deleteTask(${i})">Delete</button>
+                `
+          list.appendChild(item)
+        })
+      }
+
+      showTasks()
+    </script>
+  </body>
+</html>
